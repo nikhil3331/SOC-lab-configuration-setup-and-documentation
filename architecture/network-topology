@@ -1,0 +1,15 @@
+The SOC environment uses a dual-adapter network setup in VirtualBox to safely simulate attacks while maintaining full system functionality.
+
+Adapter 1 — NAT (External Internet Access)
+ Used for secure outbound connectivity only.
+
+Allows downloading OS updates, Docker images, Splunk apps, Sysmon, and Universal Forwarder packages
+Provides internet access to both VMs
+No inbound connections allowed, ensuring the host machine remains protected
+
+Adapter 2 — Host-Only Network (Internal Attack & Monitoring Network)
+ Dedicated isolated network for SOC and attack simulation tasks.
+
+Enables direct communication between Kali (Attacker) and Windows Server (Victim)
+Splunk Universal Forwarder sends logs → Splunk Enterprise (Kali VM)
+All brute-force, lateral movement, and exploitation traffic remains fully contained within the isolated virtual network
