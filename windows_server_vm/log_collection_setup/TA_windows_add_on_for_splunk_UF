@@ -1,25 +1,19 @@
-/docs/setup.md`.
-
----
-
 # Splunk Add-on for Microsoft Windows (TA_windows)
 
-## Installation & Configuration Guide
+Installation & Configuration Guide
 
-### Purpose
+Purpose:
 
-The **Splunk Add-on for Microsoft Windows (TA_windows)** is required to correctly parse, normalize, and enrich Windows Event Logs collected by the Splunk Universal Forwarder.
+The "Splunk Add-on for Microsoft Windows (TA_windows)" is required to correctly parse, normalize, and enrich Windows Event Logs collected by the Splunk Universal Forwarder.
 In this project, it enables reliable ingestion and CIM-compliant parsing of:
 
-* Security Event Logs
-* System & Application Logs
-* Sysmon Operational Logs
+- Security Event Logs
+- System & Application Logs
+- Sysmon Operational Logs
 
 This add-on is essential for accurate detection engineering and SOC-style investigations.
 
----
-
-## Environment Context
+ Environment Context
 
 | Component  | Details                                   |
 | ---------- | ----------------------------------------- |
@@ -29,54 +23,40 @@ This add-on is essential for accurate detection engineering and SOC-style invest
 | SIEM       | Splunk Enterprise (Kali Linux VM)         |
 | Transport  | TCP Forwarding (Port 9997)                |
 
----
-
-## Step 1: Download the Add-on
+ Step 1: Download the Add-on
 
 The add-on was downloaded from **Splunkbase**:
 
-* **Name:** Splunk Add-on for Microsoft Windows
-* **App ID:** TA_windows
-* **Vendor:** Splunk
-* **Format:** `.tar.gz`
+- Name: Splunk Add-on for Microsoft Windows
+- App ID: TA_windows
+- Vendor: Splunk
+- Format: `.tar.gz`
 
-> ⚠️ Important:
-> The add-on must be downloaded from **Splunkbase**, not GitHub forks or third-party sources, to ensure compatibility and signed binaries.
+ Important:
+- The add-on must be downloaded from Splunkbase, not GitHub forks or third-party sources, to ensure compatibility and signed binaries.
 
----
+ Step 2: Extract the Add-on (Correct Method)
 
-## Step 2: Extract the Add-on (Correct Method)
+The downloaded file is a `.tar.gz` archive, which requires two-stage extraction.
 
-The downloaded file is a `.tar.gz` archive, which requires **two-stage extraction**.
-
-### Extraction steps (Windows):
+ Extraction steps (Windows):
 
 1. Right-click the file
-2. Use **7-Zip** → *Extract Here*
+2. Use 7-Zip → Extract Here
 3. This produces a `.tar` file
-4. Right-click the `.tar` → *Extract Here*
+4. Right-click the `.tar` → Extract Here
 
 After extraction, the following folder is created:
-
-```
 TA_windows/
-```
 
----
-
-## Step 3: Install the Add-on on the Universal Forwarder
+ Step 3: Install the Add-on on the Universal Forwarder
 
 The add-on was installed **on the Windows Server running the Universal Forwarder**, not on the Splunk server.
 
-### Destination path:
-
-```
+ Destination path:
 C:\Program Files\SplunkUniversalForwarder\etc\apps\
-```
 
-### Final directory structure:
-
-```
+ Final directory structure:
 C:\Program Files\SplunkUniversalForwarder\etc\apps\TA_windows\
 │
 ├── bin\
@@ -84,25 +64,16 @@ C:\Program Files\SplunkUniversalForwarder\etc\apps\TA_windows\
 ├── metadata\
 ├── README\
 └── app.conf
-```
+- This confirms the add-on is correctly placed and discoverable by Splunk.
 
-> This confirms the add-on is correctly placed and discoverable by Splunk.
-
----
-
-## Step 4: Configure Windows Event Log Inputs
+ Step 4: Configure Windows Event Log Inputs
 
 Custom event log inputs were configured separately to control **what data is collected** and **where it is indexed**.
 
-### File created:
-
-```
+ File created:
 C:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf
-```
 
-### Configuration:
-
-```conf
+ Configuration:
 [WinEventLog://Microsoft-Windows-Sysmon/Operational]
 disabled = 0
 renderXml = true
@@ -119,99 +90,77 @@ index = winlogs
 [WinEventLog://Application]
 disabled = 0
 index = winlogs
-```
 
-**Why this matters:**
+Why this matters:
 
-* `renderXml=true` ensures full Sysmon event fidelity
-* Dedicated index (`winlogs`) keeps Windows telemetry isolated
-* Compatible with Splunk CIM data models
+- `renderXml=true` ensures full Sysmon event fidelity
+- Dedicated index (`winlogs`) keeps Windows telemetry isolated
+- Compatible with Splunk CIM data models
 
----
-
-## Step 5: Restart the Universal Forwarder
+Step 5: Restart the Universal Forwarder
 
 After installing the add-on and configuring inputs, the forwarder service should be restarted:
 
-```powershell
+Run these commands in powershell
 net stop splunkforwarder
 net start splunkforwarder
-```
-
----
 
 ## Step 6: Verification (Forwarder Side)
 
-### Confirm inputs are loaded:
+ Confirm inputs are loaded:
 
-```powershell
+Run this on powershell
 cd "C:\Program Files\SplunkUniversalForwarder\bin"
 .\splunk.exe btool inputs list --debug | findstr WinEventLog
-```
 
 Expected output includes:
 
-```
 [WinEventLog://Security]
 [WinEventLog://System]
 [WinEventLog://Application]
 [WinEventLog://Microsoft-Windows-Sysmon/Operational]
-```
 
-### Confirm forwarding target:
+ Confirm forwarding target:
 
-```powershell
+Run this on powershell
 .\splunk.exe list forward-server
-```
 
 Expected:
-
-```
 Active forwards:
    <SPLUNK_INDEXER_IP>:9997
-```
 
----
-
-## Step 7: Verification (Splunk Server Side)
+Step 7: Verification (Splunk Server Side)
 
 A dedicated index was created on the Splunk server:
 
 Index Name: winlogs
 
-### Validation search:
+ Validation search:
 
-```spl
+search this on spl in splunk
 index=winlogs
-```
 
 Confirmed data ingestion:
-
 * Sysmon Event IDs (1, 3, 11, 22)
 * Windows Security Events (4624, 4625, 4672)
 * System and Application logs
 * Hostname resolution (`WIN-SERVER01`)
 
----
+Outcome
 
-## Outcome
+- Windows Event Logs successfully ingested
+- Sysmon telemetry fully visible
+- CIM-compliant field extraction enabled
+- Reliable SOC-ready endpoint telemetry
+- Foundation ready for detections, alerts, and dashboards
 
-✅ Windows Event Logs successfully ingested
-✅ Sysmon telemetry fully visible
-✅ CIM-compliant field extraction enabled
-✅ Reliable SOC-ready endpoint telemetry
-✅ Foundation ready for detections, alerts, and dashboards
+Using TA_windows ensures:
 
----
-
-## Why This Matters for SOC Operations
-
-Using **TA_windows** ensures:
-
-* Standardized field naming
-* Compatibility with Splunk Security & CIM
-* Accurate detection logic
-* Enterprise-aligned log ingestion practices
+- Standardized field naming
+- Compatibility with Splunk Security & CIM
+- Accurate detection logic
+- Enterprise-aligned log ingestion practices
 
 This setup mirrors how Windows telemetry is handled in real-world SOC environments.
+
 
