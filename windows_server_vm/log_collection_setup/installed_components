@@ -1,17 +1,10 @@
 Splunk Universal Forwarder (UF)
-
 Configured to forward logs to a centralized Splunk instance
-
 Uses TCP output on port 9997
-
 Can forward to:
-
 A Splunk Indexer
-
 Or a Heavy Forwarder (optional)
 
 Sysmon (System Monitor)
-
 Installed with a hardened, minimal configuration inspired by SwiftOnSecurity
-
 Focused on high-signal telemetry (process creation, network activity)
