@@ -5,6 +5,11 @@ Can forward to:
 A Splunk Indexer
 Or a Heavy Forwarder (optional)
 
+TA_windows add-on for Splunk Universal Forwarder (UF)
+The Windows Add-on for Splunk UF (Universal Forwarder) is crucial for collecting, parsing, and sending Windows-specific data (like Event Logs, Performance Counters, Registry, etc.) from Windows machines to Splunk, enabling security monitoring, IT operations, and compliance by transforming raw Windows logs into searchable, structured data, making the UF a comprehensive, lightweight data collector for Windows environments
+
 Sysmon (System Monitor)
 Installed with a hardened, minimal configuration inspired by SwiftOnSecurity
 Focused on high-signal telemetry (process creation, network activity)
+
+After installation of above three components create an "Index" in splunk by the name "winlogs" or any of your choice

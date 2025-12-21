@@ -1,0 +1,18 @@
+Sample minimal Sysmon config (save as sysmon-config.xml on Windows and install with "Sysmon -i sysmon-config.xml"):
+
+<Sysmon schemaversion="4.60">
+  <HashAlgorithms>sha256</HashAlgorithms>
+  <EventFiltering>
+    <ProcessCreate onmatch="include">
+      <CommandLine condition="contains">powershell</CommandLine>
+      <Image condition="is">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Image>
+    </ProcessCreate>
+    <NetworkConnect onmatch="include"/>
+    <ImageLoad onmatch="exclude">
+      <Image condition="begin with">C:\Windows\</Image>
+    </ImageLoad>
+    <FileCreateTime onmatch="include"/>
+    <DriverLoad onmatch="exclude"/>
+    <RegistryEvent onmatch="exclude"/>
+  </EventFiltering>
+</Sysmon>

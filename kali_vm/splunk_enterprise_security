@@ -1,0 +1,36 @@
+NOTE: Splunk is heavy. If your Kali VM has less than 4GB of RAM, it may crash or run very slowly
+
+1. Download the Installer
+
+Go to the Splunk Enterprise Download Page
+Choose Linux and then the .deb package
+Download via Command Line (wget)
+
+# Example wget command (yours will have a unique token)
+wget -O splunk.deb "https://download.splunk.com/products/splunk/releases/9.x.x/linux/splunk-xxx-amd64.deb"
+
+2. Install the Package
+
+sudo dpkg -i splunk.deb
+
+Splunk will be installed in /opt/splunk by default.
+
+3. Initialize and Start Splunk
+
+You must run the start command to accept the license and create your admin credentials.
+
+cd /opt/splunk/bin
+sudo ./splunk start --accept-license
+
+Username: Create one (e.g., admin).
+Password: Set a strong password (it will not show as you type).
+
+4. Enable Boot-Start (Optional)
+
+If you want Splunk to start automatically every time you turn on your Kali machine then run:
+sudo ./splunk enable boot-start
+
+5. Access the Web Interface
+
+Once the terminal says "The Splunk web interface is at...", open Firefox in Kali and go to:
+http://localhost:8000 (or http://127.0.0.1:8000)

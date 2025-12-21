@@ -1,0 +1,14 @@
+Sample outputs.conf (for Windows UF)
+
+[tcpout]
+defaultGroup = default-autolb-group
+[tcpout:default-autolb-group]
+server = 192.168.157.7:9997
+[tcpout-server://192.168.157.7:9997]
+
+later place it in $SPLUNK_HOME\etc\system\local\outputs.conf
+
+Inputs to collect (minimum):
+	• Windows Event Logs: Security, System, Application
+	• Sysmon channel: Microsoft-Windows-Sysmon/Operational
+	• PowerShell Operational logs: Microsoft-Windows-PowerShell/Operational
