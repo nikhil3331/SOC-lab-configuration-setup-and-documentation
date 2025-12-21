@@ -1,0 +1,21 @@
+🖥️ 1) Kali Linux VM – Attacker + SIEM Platform + Containerized Victim Services (VM-1) – 192.168.157.7
+🔹 Installed Components
+Splunk Enterprise (SIEM Platform)
+Attack Tools: Nmap, Hydra, Gobuster, Metasploit etc.
+
+🔹 1.1 Docker-Based Security Infrastructure
+A full security simulation layer deployed using a single docker-compose.yml, orchestrating 6 Containers are as follows:
+Docker Engine & Docker Compose
+DVWA (Damn Vulnerable Web App) (logs forwarded by nginix proxy)
+MySQL 5.7 backend (port: 8083)
+phpMyAdmin (port: 8082)
+nginx reverse proxy generating real access logs (port: 8081)
+Python-based log generator pushing events to Splunk HEC
+Beacon simulator generating C2-like heartbeat traffic
+This stack provides realistic attack surfaces and diverse log sources for detection engineering.
+
+🪟 2) Windows Server 2019 VM – Victim Endpoint (VM-2) – 192.168.157.8
+🔹 Monitoring & Telemetry
+Splunk Universal Forwarder (log forwarding pipeline)
+Sysmon for detailed process, registry, and network telemetry
+PowerShell Script Block & Module Logging

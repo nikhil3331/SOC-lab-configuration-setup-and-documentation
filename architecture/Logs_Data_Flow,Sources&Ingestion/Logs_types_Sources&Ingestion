@@ -1,0 +1,29 @@
+Log types collected:
+
+Web server logs
+
+Application logs
+
+Windows Server Logs (Event Logs & sysmon)
+
+Python Log generator logs
+
+Authentication logs
+
+Log Sources:
+
+Windows Server Event logs & sysmon
+
+Nginix web proxy container
+
+DVWA container
+
+MySQL container
+
+Python log generator
+
+How logs were ingested:
+
+Splunk Universal Forwarder for Windows Server
+
+HTTP Event Collector (HEC) for Docker Container stack hosted on Kali VM

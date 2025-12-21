@@ -1,0 +1,142 @@
+version: "3.8"
+
+services:
+  # DVWA vulnerable web app
+  dvwa:
+    image: vulnerables/web-dvwa:latest
+    container_name: dvwa
+    environment:
+      DB_SERVER: mysql
+      DB_USER: dvwa
+      DB_PASSWORD: password
+      DB_DATABASE: dvwa
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "${SPLUNK_TOKEN}"
+        splunk-url: "${SPLUNK_HEC}"
+        splunk-index: "web"
+        splunk-sourcetype: "dvwa:app"
+        splunk-insecureskipverify: "true"
+        splunk-format: "raw"
+        tag: "dvwa"
+    depends_on:
+      - mysql
+    restart: unless-stopped
+    networks:
+      - soc-net
+
+  # MySQL for DVWA
+  mysql:
+    image: mysql:5.7
+    container_name: dvwa-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: dvwa
+      MYSQL_USER: dvwa
+      MYSQL_PASSWORD: password
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "${SPLUNK_TOKEN}"
+        splunk-url: "${SPLUNK_HEC}"
+        splunk-index: "web"
+        splunk-sourcetype: "mysql"
+        splunk-insecureskipverify: "true"
+        splunk-format: "raw"
+        tag: "mysql"
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - soc-net
+
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+    ports:
+      - "8082:80"
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "${SPLUNK_TOKEN}"
+        splunk-url: "${SPLUNK_HEC}"
+        splunk-index: "web"
+        splunk-sourcetype: "phpmyadmin:access"
+        splunk-insecureskipverify: "true"
+        splunk-format: "raw"
+        tag: "phpmyadmin"
+    restart: unless-stopped
+    networks:
+      - soc-net
+
+  # Nginx reverse proxy
+  web-proxy:
+    image: nginx:stable
+    container_name: web-proxy
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx/html:/usr/share/nginx/html:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "${SPLUNK_TOKEN}"
+        splunk-url: "${SPLUNK_HEC}"
+        splunk-index: "web"
+        splunk-sourcetype: "nginx:access"
+        splunk-insecureskipverify: "true"
+        splunk-format: "raw"
+        tag: "web-proxy"
+    restart: unless-stopped
+    networks:
+      - soc-net
+
+  # Python log generator
+  log-generator:
+    build:
+      context: .
+      dockerfile: docker/loggen.Dockerfile
+    image: log-generator-img
+    container_name: log-generator
+    env_file:
+      - .env
+    volumes:
+      - ./logen:/app
+    working_dir: /app
+    environment:
+      SPLUNK_HEC: "${SPLUNK_HEC}"
+      SPLUNK_TOKEN: "${SPLUNK_TOKEN}"
+      SPLUNK_SOURCETYPE: "${SPLUNK_SOURCETYPE:-docker:app}"
+    command: ["python", "log_generator.py"]
+    restart: unless-stopped
+    networks:
+      - soc-net
+
+  # Beacon simulator
+  beacon-sim:
+    image: curlimages/curl:latest
+    container_name: beacon-sim
+    command: ["sh", "-c", "while true; do curl -s -o /dev/null http://web-proxy:80/?t=$$(date +%s); sleep 15; done"]
+    restart: unless-stopped
+    networks:
+      - soc-net
+
+volumes:
+  mysql-data:
+
+networks:
+  soc-net:
+    driver: bridge
