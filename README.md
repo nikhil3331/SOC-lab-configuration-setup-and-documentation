@@ -1,4 +1,4 @@
-NOTE: This repository serves exclusively as the technical documentation for my "SOC Lab" environment and configuration. For the full project overview, live demonstrations, and detailed case studies, please contact me for the link to my Portfolio.
+NOTE: This repository serves exclusively as the technical documentation of my "SOC Lab project" environment. For the full project overview, live demonstrations, and detailed case studies, please contact me for the link to my Portfolio.
 
 Project Overview:
 
@@ -104,4 +104,5 @@ By using this repository, you acknowledge that:
 - You will operate the lab in a controlled and authorized environment
 
 - You accept full responsibility for any actions performed using this material
+
 
