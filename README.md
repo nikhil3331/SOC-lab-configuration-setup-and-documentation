@@ -25,6 +25,7 @@ Goal:
 The goal was to create an environment where realistic attacks can be executed and custom detections can be developed.
 
 
+
 🔐 Security Disclaimer
 
 - This repository is created strictly for educational, research, and defensive security practice purposes.
@@ -104,5 +105,6 @@ By using this repository, you acknowledge that:
 - You will operate the lab in a controlled and authorized environment
 
 - You accept full responsibility for any actions performed using this material
+
 
 
